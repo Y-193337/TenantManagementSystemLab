@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    // NEW: switch Safe Args on for this app.
+    // It must come BELOW the android.application line
     id("androidx.navigation.safeargs.kotlin")
 }
 
