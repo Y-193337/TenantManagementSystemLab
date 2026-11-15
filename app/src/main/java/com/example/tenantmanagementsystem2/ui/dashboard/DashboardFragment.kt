@@ -16,6 +16,7 @@ class DashboardFragment : Fragment() {
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
 
+    // The SHARED ViewModel: every Fragment in MainActivity gets the SAME one
     private val viewModel: TenantViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,14 +38,12 @@ class DashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d("TENANT_LIFECYCLE", "   DashboardFragment: onViewCreated")
 
-        viewModel.tenantCountText.observe(viewLifecycleOwner) { text ->
-            binding.tenantCountTextView.text = text
-        }
+        // DATA BINDING: give the ViewModel to <variable name="viewModel">
+        binding.viewModel = viewModel
+        // Let the layout WATCH LiveData (otherwise the text never updates)
+        binding.lifecycleOwner = viewLifecycleOwner
 
-        viewModel.totalRentText.observe(viewLifecycleOwner) { text ->
-            binding.totalRentTextView.text = text
-        }
-
+        // UI JOB: navigation stays in the Fragment
         binding.addTenantButton.setOnClickListener {
             val action = DashboardFragmentDirections.actionDashboardFragmentToAddTenantFragment()
             findNavController().navigate(action)

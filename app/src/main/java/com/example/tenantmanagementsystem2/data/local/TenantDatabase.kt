@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.tenantmanagementsystem2.data.model.Tenant
 
+// Room Database Singleton for Stage 3
 @Database(entities = [Tenant::class], version = 1, exportSchema = false)
 abstract class TenantDatabase : RoomDatabase() {
 
