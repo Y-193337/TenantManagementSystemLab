@@ -25,5 +25,5 @@ Data Flow: Screens → TenantViewModel (LiveData) → TenantRepository → Room 
 | 3 Room | YAMATO MUTUA KATSUKAWA | 193337        |https://github.com/Y-193337/TenantManagementSystem2/commit/c7d7208e71b06ae6bf2039f888be8da3596eea48|
 | 4 Screens | AHMED ISMAEL FOUZI     | 190283        | [https://github.com](https://github.com/IsmaelFA19/TenantManagementSystem) |
 | 5 Data integration | KABURU RYAN MURIITHI   | 189480        | https://github.com/muriithiryan/TenantManagementSystem.git |
-| 6 Release | Iman Feisal Mohamed    | 144871        |  |
+| 6 Release | Iman Feisal Mohamed    | 144871        |https://github.com/Y-193337/TenantManagementSystemLab/blame/master/README.md  |
 
