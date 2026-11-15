@@ -1,26 +1,33 @@
 package com.example.tenantmanagementsystem2.ui.viewmodel
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import com.example.tenantmanagementsystem2.Tenant
-import com.example.tenantmanagementsystem2.TenantRepository
+import androidx.lifecycle.viewModelScope
+import com.example.tenantmanagementsystem2.data.local.TenantDatabase
+import com.example.tenantmanagementsystem2.data.model.Tenant
+import com.example.tenantmanagementsystem2.data.repository.TenantRepository
+import kotlinx.coroutines.launch
 
-// A Jetpack ViewModel: Android keeps it alive while the screen rotates,
-// and clears it when MainActivity finishes
-class TenantViewModel : ViewModel() {
+// AndroidViewModel gives us access to the application context.
+class TenantViewModel(application: Application) : AndroidViewModel(application) {
 
-    // ── 1. THE DATA ───────────────────────────────────────────────
-    // PRIVATE and MUTABLE: only this ViewModel can change it
-    private val _tenants = MutableLiveData<List<Tenant>>(TenantRepository.tenants.toList())
+    // ── 1. DATABASE AND REPOSITORY ────────────────────────────────
 
-    // PUBLIC and READ-ONLY: screens can watch it, not change it
-    val tenants: LiveData<List<Tenant>> = _tenants
+    private val tenantDao = TenantDatabase
+        .getDatabase(application)
+        .tenantDao()
 
-    // ── 2. TRANSFORMATIONS: text ready for the screens ────────────
-    // map() makes a NEW LiveData that updates whenever tenants changes
+    private val repository = TenantRepository(tenantDao)
+
+    // Room provides LiveData that automatically updates when data changes.
+    val tenants: LiveData<List<Tenant>> = repository.tenants
+
+
+    // ── 2. TRANSFORMATIONS: DATA FOR THE SCREENS ──────────────────
+
     val tenantCountText: LiveData<String> = tenants.map { list ->
         "Tenants\n${list.size}"
     }
@@ -31,38 +38,48 @@ class TenantViewModel : ViewModel() {
     }
 
     val allTenantsText: LiveData<String> = tenants.map { list ->
-        if (list.isEmpty()) "No tenants yet. Add one from the Dashboard."
-        else list.joinToString("\n\n") { it.summary() }
+        if (list.isEmpty()) {
+            "No tenants yet. Add one from the Dashboard."
+        } else {
+            list.joinToString("\n\n") { it.summary() }
+        }
     }
 
-    // ── 3. ACTIONS the screens can ask for ────────────────────────
-    // Checks the input and saves the tenant.
-    // Returns the new Tenant, or null if the input was not valid
+
+    // ── 3. ACTIONS THE SCREENS CAN REQUEST ────────────────────────
+
     fun addTenant(name: String, phone: String, rent: String): Tenant? {
+
         val cleanName = name.trim()
         val cleanPhone = phone.trim()
         val cleanRent = rent.trim()
 
-        // Business rule: all three fields are required
+        // Validate the input.
         if (cleanName.isEmpty() || cleanPhone.isEmpty() || cleanRent.isEmpty()) {
             return null
         }
 
+        // Create a new tenant.
         val tenant = Tenant(cleanName, cleanPhone, cleanRent)
 
-        TenantRepository.addTenant(tenant)                   // ask the DATA LAYER to store it
-        _tenants.value = TenantRepository.tenants.toList()   // every observer updates
+        // Save the tenant asynchronously through the repository.
+        viewModelScope.launch {
+            repository.addTenant(tenant)
+        }
 
+        // Return the tenant for Safe Args navigation.
         return tenant
     }
 
+
     // ── 4. LIFECYCLE LOGS ─────────────────────────────────────────
+
     init {
-        Log.d("TENANT_LIFECYCLE", "      TenantViewModel: created")
+        Log.d("TENANT_LIFECYCLE", "TenantViewModel: created")
     }
 
     override fun onCleared() {
         super.onCleared()
-        Log.d("TENANT_LIFECYCLE", "      TenantViewModel: onCleared")
+        Log.d("TENANT_LIFECYCLE", "TenantViewModel: onCleared")
     }
 }
