@@ -20,7 +20,7 @@ Data Flow: Screens → TenantViewModel (LiveData) → TenantRepository → Room 
 ## Team
 | Stage | Member | Admission No. | Pull request |
 |---|---|---|---|
-| 1 Lead | Member Name| 000000 |https://github.com  |
+| 1 Lead | TANISHA LAVIDA AMARA| 190128 | https://github.com/Lavida-loca/TenantManagementSystem |
 | 2 ViewModel | MICHELLE MUNGAI NJOKI | 193335 | https://github.com/Michelle-M3/TenantManagementSystem2-.git|
 | 3 Room | YAMATO MUTUA KATSUKAWA |193337 |https://github.com/Y-193337/TenantManagementSystemLab.git|
 | 4 Screens | Member Name | 000000 | https://github.com |
